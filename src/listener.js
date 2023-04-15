@@ -1,20 +1,19 @@
 const autoBind = require("auto-bind");
 
 class Listener {
-  constructor(notesService, mailSender) {
-    this._notesService = notesService;
+  constructor(playlistsService, mailSender) {
+    this._playlistsService = playlistsService;
     this._mailSender = mailSender;
 
     autoBind(this);
   }
 
   async listen(message) {
-    const { userId, targetEmail } = JSON.parse(message.content.toString());
-
-    const notes = await this._notesService.getNotes(userId);
+    const { targetEmail, playlistId } = JSON.parse(message.content.toString());
+    const playlists = await this._playlistsService.getPlaylist(playlistId);
     const result = await this._mailSender.sendEmail(
       targetEmail,
-      JSON.stringify(notes)
+      JSON.stringify(playlists)
     );
     console.log(result);
   }
