@@ -1,19 +1,22 @@
-const autoBind = require("auto-bind");
+const autoBind = require('auto-bind');
+const { Console } = require('console');
+
+const console = new Console(process.stdout, process.stderr);
 
 class Listener {
   constructor(playlistsService, mailSender) {
-    this._playlistsService = playlistsService;
-    this._mailSender = mailSender;
+    this.playlistsService = playlistsService;
+    this.mailSender = mailSender;
 
     autoBind(this);
   }
 
   async listen(message) {
     const { targetEmail, playlistId } = JSON.parse(message.content.toString());
-    const playlists = await this._playlistsService.getPlaylist(playlistId);
-    const result = await this._mailSender.sendEmail(
+    const playlists = await this.playlistsService.getPlaylist(playlistId);
+    const result = await this.mailSender.sendEmail(
       targetEmail,
-      JSON.stringify(playlists)
+      JSON.stringify({ playlist: playlists }),
     );
     console.log(result);
   }
